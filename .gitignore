@@ -1,0 +1,20 @@
+# Ambiente virtual Python
+.venv/
+
+# Banco vetorial gerado localmente
+banco/
+
+# Cache Python
+__pycache__/
+*.pyc
+
+# Arquivos temporários
+*.tmp
+*.log
+
+# VS Code
+.vscode/
+
+# Sistema operacional
+.DS_Store
+Thumbs.db

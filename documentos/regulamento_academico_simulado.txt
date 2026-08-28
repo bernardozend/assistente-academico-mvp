@@ -1,0 +1,39 @@
+INSTITUIÇÃO MODELO DE ENSINO SUPERIOR
+REGULAMENTO ACADÊMICO SIMULADO
+Documento fictício criado exclusivamente para testes do protótipo.
+
+1. SEGUNDA CHAMADA
+
+O estudante que não comparecer a uma avaliação poderá solicitar segunda chamada em até 5 dias úteis após a data da avaliação.
+
+A solicitação deverá ser realizada pelo Portal Acadêmico, na opção "Requerimentos".
+
+Após o prazo de 5 dias úteis, a solicitação não será aceita, salvo situações excepcionais analisadas pela coordenação do curso.
+
+2. AMBIENTE VIRTUAL DE APRENDIZAGEM
+
+O Ambiente Virtual de Aprendizagem é utilizado para acesso às disciplinas, materiais didáticos, atividades e avisos acadêmicos.
+
+Em caso de dificuldade de acesso ao ambiente virtual, o estudante deverá entrar em contato com o Suporte EAD.
+
+O Suporte EAD funciona de segunda a sexta-feira, das 8h às 18h.
+
+3. BIBLIOTECA
+
+A biblioteca disponibiliza empréstimo de até 3 livros simultaneamente para estudantes de graduação.
+
+O prazo padrão de empréstimo é de 7 dias corridos.
+
+A renovação poderá ser realizada pelo Portal da Biblioteca desde que a obra não possua reserva de outro usuário.
+
+4. ESTÁGIO
+
+Dúvidas relacionadas a estágio obrigatório devem ser encaminhadas ao Núcleo de Estágios.
+
+A documentação para início do estágio deverá ser entregue antes do início das atividades na instituição concedente.
+
+5. INFORMAÇÕES NÃO DISPONÍVEIS
+
+Este documento não possui informações sobre estacionamento, mensalidades, bolsas de estudo, restaurante ou transporte.
+
+Quando uma informação não estiver presente nesta base documental, o assistente deverá informar que não encontrou dados suficientes para responder.
