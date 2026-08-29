@@ -14,7 +14,7 @@ collection = client.get_collection(
     embedding_function=embedding_function
 )
 
-pergunta = "Perdi minha prova. Quanto tempo tenho para pedir segunda chamada?"
+pergunta = "Como funciona o acesso ao Wi-Fi acadêmico?"
 
 resultado = collection.query(
     query_texts=[pergunta],
@@ -27,9 +27,16 @@ print(pergunta)
 print("\nTRECHOS ENCONTRADOS:\n")
 
 for i, trecho in enumerate(resultado["documents"][0], start=1):
+
     metadata = resultado["metadatas"][0][i - 1]
 
     print(f"--- RESULTADO {i} ---")
     print(trecho)
-    print(f"Fonte: {metadata['arquivo']}")
+
+    print(f"\nArquivo: {metadata['arquivo']}")
+
+    if metadata.get("pagina", 0) > 0:
+        print(f"Página: {metadata['pagina']}")
+
+    print(f"Trecho: {metadata['trecho']}")
     print()

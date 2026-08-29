@@ -19,15 +19,56 @@ st.warning(
     "nesta demonstração são simuladas."
 )
 
+
 if "mensagens" not in st.session_state:
     st.session_state.mensagens = []
 
-# Exibe histórico
+
+# Histórico
 for mensagem in st.session_state.mensagens:
+
     with st.chat_message(mensagem["role"]):
+
         st.markdown(mensagem["content"])
 
-pergunta = st.chat_input("Digite sua dúvida acadêmica...")
+        if (
+            mensagem["role"] == "assistant"
+            and mensagem.get("evidencias")
+        ):
+
+            with st.expander("📚 Evidências consultadas"):
+
+                for i, evidencia in enumerate(
+                    mensagem["evidencias"],
+                    start=1
+                ):
+
+                    st.markdown(
+                        f"**Evidência {i}**"
+                    )
+
+                    st.write(
+                        f"📄 Documento: "
+                        f"{evidencia['arquivo']}"
+                    )
+
+                    if evidencia["pagina"] > 0:
+                        st.write(
+                            f"📖 Página: "
+                            f"{evidencia['pagina']}"
+                        )
+
+                    st.info(
+                        evidencia["trecho"]
+                    )
+
+                    st.divider()
+
+
+pergunta = st.chat_input(
+    "Digite sua dúvida acadêmica..."
+)
+
 
 if pergunta:
 
@@ -39,20 +80,53 @@ if pergunta:
     with st.chat_message("user"):
         st.markdown(pergunta)
 
+
     with st.chat_message("assistant"):
 
-        with st.spinner("Consultando a documentação..."):
+        with st.spinner(
+            "Consultando a documentação..."
+        ):
 
-            resposta, fontes = responder(pergunta)
+            resposta, evidencias = responder(
+                pergunta
+            )
 
         st.markdown(resposta)
 
-        if fontes:
-            with st.expander("📄 Fontes consultadas"):
-                for fonte in fontes:
-                    st.write(f"• {fonte}")
+
+        with st.expander(
+            "📚 Evidências consultadas"
+        ):
+
+            for i, evidencia in enumerate(
+                evidencias,
+                start=1
+            ):
+
+                st.markdown(
+                    f"**Evidência {i}**"
+                )
+
+                st.write(
+                    f"📄 Documento: "
+                    f"{evidencia['arquivo']}"
+                )
+
+                if evidencia["pagina"] > 0:
+                    st.write(
+                        f"📖 Página: "
+                        f"{evidencia['pagina']}"
+                    )
+
+                st.info(
+                    evidencia["trecho"]
+                )
+
+                st.divider()
+
 
     st.session_state.mensagens.append({
         "role": "assistant",
-        "content": resposta
+        "content": resposta,
+        "evidencias": evidencias
     })

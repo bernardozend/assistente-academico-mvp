@@ -18,36 +18,64 @@ collection = client.get_collection(
 
 
 def responder(pergunta):
-    # Busca os trechos mais relacionados
+
     resultado = collection.query(
         query_texts=[pergunta],
-        n_results=2
+        n_results=3
     )
 
     trechos = resultado["documents"][0]
     metadatas = resultado["metadatas"][0]
 
-    contexto = "\n\n".join(
-        f"[Fonte: {meta['arquivo']}]\n{trecho}"
-        for trecho, meta in zip(trechos, metadatas)
-    )
+    contexto_partes = []
+
+    evidencias = []
+
+    for trecho, metadata in zip(trechos, metadatas):
+
+        arquivo = metadata["arquivo"]
+        pagina = metadata.get("pagina", 0)
+
+        contexto_partes.append(
+            f"""
+DOCUMENTO: {arquivo}
+PÁGINA: {pagina}
+
+{trecho}
+"""
+        )
+
+        evidencias.append({
+            "arquivo": arquivo,
+            "pagina": pagina,
+            "trecho": trecho
+        })
+
+    contexto = "\n\n".join(contexto_partes)
 
     prompt = f"""
 Você é um assistente acadêmico experimental.
 
-REGRAS:
-1. Responda SOMENTE com base no contexto fornecido.
+REGRAS OBRIGATÓRIAS:
+
+1. Responda somente utilizando o contexto fornecido.
 2. Não utilize conhecimento externo.
 3. Não invente informações.
-4. Se o contexto não possuir informação suficiente para responder,
-   diga exatamente:
-   "Não encontrei essa informação na documentação disponível."
-5. Responda em português brasileiro, de forma clara e objetiva.
+4. Se não houver informação suficiente no contexto,
+responda exatamente:
+
+"Não encontrei essa informação na documentação disponível."
+
+5. Responda em português brasileiro.
+6. Seja claro e objetivo.
+7. Não mencione informações que não estejam presentes nos documentos.
 
 CONTEXTO:
+
 {contexto}
 
 PERGUNTA:
+
 {pergunta}
 """
 
@@ -61,22 +89,4 @@ PERGUNTA:
         ]
     )
 
-    fontes = list(dict.fromkeys(
-        meta["arquivo"] for meta in metadatas
-    ))
-
-    return resposta["message"]["content"], fontes
-
-
-if __name__ == "__main__":
-    pergunta = input("Pergunta: ")
-
-    resposta, fontes = responder(pergunta)
-
-    print("\nRESPOSTA:")
-    print(resposta)
-
-    print("\nFONTES:")
-    for fonte in fontes:
-        print(f"- {fonte}")
-        
+    return resposta["message"]["content"], evidencias

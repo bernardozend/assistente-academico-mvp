@@ -1,19 +1,18 @@
 from pathlib import Path
+import pymupdf
 import chromadb
 from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
 
-ARQUIVO = Path("documentos/regulamento_academico_simulado.txt")
+PASTA_DOCUMENTOS = Path("documentos")
 BANCO = "banco/chroma"
 
-# Modelo de embeddings multilíngue
 embedding_function = SentenceTransformerEmbeddingFunction(
     model_name="paraphrase-multilingual-MiniLM-L12-v2"
 )
 
-# Banco vetorial local
 client = chromadb.PersistentClient(path=BANCO)
 
-# Recria a coleção para evitar duplicações durante os testes
+# Recria a coleção para evitar duplicações
 try:
     client.delete_collection("documentos_academicos")
 except Exception:
@@ -24,27 +23,101 @@ collection = client.create_collection(
     embedding_function=embedding_function
 )
 
-texto = ARQUIVO.read_text(encoding="utf-8")
 
-# Divide o documento por seções/parágrafos
-trechos = [
-    trecho.strip()
-    for trecho in texto.split("\n\n")
-    if trecho.strip()
-]
+def dividir_texto(texto, tamanho=900, sobreposicao=150):
+    texto = " ".join(texto.split())
 
-for i, trecho in enumerate(trechos):
-    collection.add(
-        ids=[f"trecho_{i}"],
-        documents=[trecho],
-        metadatas=[
-            {
-                "arquivo": ARQUIVO.name,
-                "trecho": i
-            }
-        ]
+    if not texto:
+        return []
+
+    trechos = []
+    inicio = 0
+
+    while inicio < len(texto):
+        fim = inicio + tamanho
+        trecho = texto[inicio:fim].strip()
+
+        if trecho:
+            trechos.append(trecho)
+
+        if fim >= len(texto):
+            break
+
+        inicio = fim - sobreposicao
+
+    return trechos
+
+
+contador = 0
+arquivos_processados = 0
+
+
+# PDFs
+for arquivo in PASTA_DOCUMENTOS.glob("*.pdf"):
+
+    print(f"\n📄 Processando PDF: {arquivo.name}")
+
+    pdf = pymupdf.open(arquivo)
+
+    for pagina_numero, pagina in enumerate(pdf, start=1):
+
+        texto = pagina.get_text("text")
+
+        trechos = dividir_texto(texto)
+
+        for trecho_numero, trecho in enumerate(trechos, start=1):
+
+            collection.add(
+                ids=[f"trecho_{contador}"],
+                documents=[trecho],
+                metadatas=[{
+                    "arquivo": arquivo.name,
+                    "pagina": pagina_numero,
+                    "trecho": trecho_numero,
+                    "tipo": "PDF"
+                }]
+            )
+
+            contador += 1
+
+    pdf.close()
+
+    arquivos_processados += 1
+
+
+# TXT
+for arquivo in PASTA_DOCUMENTOS.glob("*.txt"):
+
+    print(f"\n📝 Processando TXT: {arquivo.name}")
+
+    texto = arquivo.read_text(
+        encoding="utf-8",
+        errors="ignore"
     )
 
-print(f"✅ Documento processado.")
-print(f"✅ {len(trechos)} trechos adicionados ao banco vetorial.")
-print(f"✅ Banco salvo em: {BANCO}")
+    trechos = dividir_texto(texto)
+
+    for trecho_numero, trecho in enumerate(trechos, start=1):
+
+        collection.add(
+            ids=[f"trecho_{contador}"],
+            documents=[trecho],
+            metadatas=[{
+                "arquivo": arquivo.name,
+                "pagina": 0,
+                "trecho": trecho_numero,
+                "tipo": "TXT"
+            }]
+        )
+
+        contador += 1
+
+    arquivos_processados += 1
+
+
+print("\n==============================")
+print("✅ INDEXAÇÃO FINALIZADA")
+print(f"📚 Arquivos processados: {arquivos_processados}")
+print(f"🧩 Trechos adicionados: {contador}")
+print(f"💾 Banco: {BANCO}")
+print("==============================")
