@@ -69,6 +69,9 @@ responda exatamente:
 5. Responda em português brasileiro.
 6. Seja claro e objetivo.
 7. Não mencione informações que não estejam presentes nos documentos.
+8. Não mencione nomes de arquivos, páginas ou documentos na resposta.
+9. Forneça primeiro uma resposta natural ao usuário.
+10. As fontes serão apresentadas separadamente pela interface.
 
 CONTEXTO:
 
