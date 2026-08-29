@@ -2,14 +2,15 @@ import streamlit as st
 from datetime import datetime
 
 from rag import responder
+from privacidade import analisar_privacidade
 
 
 # =========================================================
-# CONFIGURAÇÃO
+# CONFIGURAÇÃO GERAL
 # =========================================================
 
 st.set_page_config(
-    page_title=" COMO EU POSSO TE AJUDAR HOJE, ALUNO?",
+    page_title="Assistente Acadêmico IA",
     page_icon="🎓",
     layout="centered"
 )
@@ -47,11 +48,14 @@ NOMES_DOCUMENTOS = {
 
 
 def nome_documento(arquivo):
-    return NOMES_DOCUMENTOS.get(arquivo, arquivo)
+    return NOMES_DOCUMENTOS.get(
+        arquivo,
+        arquivo
+    )
 
 
 # =========================================================
-# FUNÇÃO PARA EXIBIR EVIDÊNCIAS
+# EXIBIÇÃO DAS EVIDÊNCIAS
 # =========================================================
 
 def mostrar_evidencias(evidencias):
@@ -59,18 +63,37 @@ def mostrar_evidencias(evidencias):
     if not evidencias:
         return
 
-    with st.expander("📚 Consultar fontes e evidências"):
+    with st.expander(
+        "📚 Consultar fontes e evidências"
+    ):
 
-        for i, evidencia in enumerate(evidencias, start=1):
+        for i, evidencia in enumerate(
+            evidencias,
+            start=1
+        ):
 
-            arquivo = evidencia["arquivo"]
-            pagina = evidencia.get("pagina", 0)
-            trecho = evidencia["trecho"]
+            arquivo = evidencia.get(
+                "arquivo",
+                "Documento não identificado"
+            )
 
-            st.markdown(f"### Evidência {i}")
+            pagina = evidencia.get(
+                "pagina",
+                0
+            )
+
+            trecho = evidencia.get(
+                "trecho",
+                ""
+            )
 
             st.markdown(
-                f"**Fonte:** {nome_documento(arquivo)}"
+                f"### Evidência {i}"
+            )
+
+            st.markdown(
+                f"**Fonte:** "
+                f"{nome_documento(arquivo)}"
             )
 
             if pagina > 0:
@@ -90,19 +113,70 @@ def mostrar_evidencias(evidencias):
 
 
 # =========================================================
+# STATUS DA RESPOSTA
+# =========================================================
+
+def mostrar_status(
+    status,
+    evidencias=None,
+    data_consulta=None
+):
+
+    evidencias = evidencias or []
+
+    if status == "privacidade":
+
+        st.warning(
+            "🛡️ **Proteção de dados ativada**  \n"
+            "A solicitação foi interrompida antes "
+            "de chegar à base documental."
+        )
+
+    elif status == "nao_encontrado":
+
+        st.info(
+            "ℹ️ **Informação não encontrada**  \n"
+            "A base documental consultada não contém "
+            "informação suficiente para responder."
+        )
+
+    elif status == "validada":
+
+        st.success(
+            "✓ **Informação fundamentada na "
+            "base acadêmica simulada**  \n"
+            f"Consulta: {data_consulta} · "
+            f"Base: {VERSAO_BASE}"
+        )
+
+        mostrar_evidencias(
+            evidencias
+        )
+
+    elif status == "erro":
+
+        st.error(
+            "Não foi possível concluir a consulta."
+        )
+
+
+# =========================================================
 # CABEÇALHO
 # =========================================================
 
-st.title("🎓 Assistente Acadêmico IA")
+st.title(
+    "🎓 Assistente Acadêmico IA"
+)
 
 st.caption(
-    "Prova de conceito para recuperação inteligente "
-    "de informações acadêmicas"
+    "Prova de conceito para recuperação "
+    "inteligente de informações acadêmicas"
 )
 
 st.warning(
-    "⚠️ Ambiente demonstrativo — todos os documentos e "
-    "informações utilizados neste protótipo são simulados."
+    "⚠️ **Ambiente demonstrativo** — "
+    "todos os documentos e informações "
+    "utilizados neste protótipo são simulados."
 )
 
 
@@ -111,52 +185,42 @@ st.warning(
 # =========================================================
 
 if "mensagens" not in st.session_state:
+
     st.session_state.mensagens = []
 
 
 # =========================================================
-# HISTÓRICO
+# HISTÓRICO DO CHAT
 # =========================================================
 
 for mensagem in st.session_state.mensagens:
 
-    with st.chat_message(mensagem["role"]):
+    with st.chat_message(
+        mensagem["role"]
+    ):
 
-        st.markdown(mensagem["content"])
+        st.markdown(
+            mensagem["content"]
+        )
 
         if mensagem["role"] == "assistant":
 
-            validada = mensagem.get("validada", False)
-
-            if validada:
-
-                data_consulta = mensagem.get(
-                    "data_consulta",
-                    ""
+            mostrar_status(
+                status=mensagem.get(
+                    "status"
+                ),
+                evidencias=mensagem.get(
+                    "evidencias",
+                    []
+                ),
+                data_consulta=mensagem.get(
+                    "data_consulta"
                 )
-
-                st.success(
-                    "✓ Informação fundamentada na "
-                    f"base acadêmica simulada · "
-                    f"Consulta: {data_consulta} · "
-                    f"Base: {VERSAO_BASE}"
-                )
-
-                mostrar_evidencias(
-                    mensagem.get("evidencias", [])
-                )
-
-            else:
-
-                st.caption(
-                    "ℹ️ A base documental consultada não "
-                    "contém informação suficiente para "
-                    "responder a esta pergunta."
-                )
+            )
 
 
 # =========================================================
-# ENTRADA DO USUÁRIO
+# CAMPO DE PERGUNTA
 # =========================================================
 
 pergunta = st.chat_input(
@@ -165,66 +229,138 @@ pergunta = st.chat_input(
 
 
 # =========================================================
-# PROCESSAMENTO
+# PROCESSAMENTO DA PERGUNTA
 # =========================================================
 
 if pergunta:
 
+    # -----------------------------------------------------
     # Salva pergunta
+    # -----------------------------------------------------
+
     st.session_state.mensagens.append({
         "role": "user",
         "content": pergunta
     })
 
-    # Mostra pergunta
     with st.chat_message("user"):
+
         st.markdown(pergunta)
 
-    # Gera resposta
+
+    # -----------------------------------------------------
+    # Valores iniciais
+    # -----------------------------------------------------
+
+    data_consulta = datetime.now().strftime(
+        "%d/%m/%Y"
+    )
+
+    resposta = ""
+    evidencias = []
+    status = None
+
+
+    # -----------------------------------------------------
+    # Processamento
+    # -----------------------------------------------------
+
     with st.chat_message("assistant"):
 
-        with st.spinner(
-            "Consultando a base acadêmica..."
-        ):
+        try:
 
-            resposta, evidencias = responder(pergunta)
+            with st.spinner(
+                "Analisando sua solicitação..."
+            ):
 
-        st.markdown(resposta)
+                # =========================================
+                # 1. PRIVACIDADE
+                # =========================================
 
-        # Verifica se a IA encontrou informação válida
-        validada = (
-            RESPOSTA_SEM_INFORMACAO.lower()
-            not in resposta.lower()
-        )
+                analise = analisar_privacidade(
+                    pergunta
+                )
 
-        data_consulta = datetime.now().strftime(
-            "%d/%m/%Y"
-        )
+                if not analise["permitido"]:
 
-        if validada:
+                    resposta = analise[
+                        "mensagem"
+                    ]
 
-            st.success(
-                "✓ Informação fundamentada na "
-                f"base acadêmica simulada · "
-                f"Consulta: {data_consulta} · "
-                f"Base: {VERSAO_BASE}"
+                    status = "privacidade"
+
+                    evidencias = []
+
+
+                else:
+
+                    # =====================================
+                    # 2. RAG
+                    # =====================================
+
+                    resposta, evidencias = responder(
+                        pergunta
+                    )
+
+                    # =====================================
+                    # 3. VERIFICA SE ENCONTROU
+                    # =====================================
+
+                    if (
+                        RESPOSTA_SEM_INFORMACAO.lower()
+                        in resposta.lower()
+                    ):
+
+                        status = (
+                            "nao_encontrado"
+                        )
+
+                        evidencias = []
+
+                    else:
+
+                        status = "validada"
+
+
+            # -------------------------------------------------
+            # Exibe resposta
+            # -------------------------------------------------
+
+            st.markdown(resposta)
+
+            mostrar_status(
+                status=status,
+                evidencias=evidencias,
+                data_consulta=data_consulta
             )
 
-            mostrar_evidencias(evidencias)
 
-        else:
+        except Exception as erro:
 
+            resposta = (
+                "Ocorreu um erro ao processar "
+                "a solicitação."
+            )
+
+            status = "erro"
+            evidencias = []
+
+            st.error(resposta)
+
+            # Durante desenvolvimento:
             st.caption(
-                "ℹ️ A base documental consultada não "
-                "contém informação suficiente para "
-                "responder a esta pergunta."
+                f"Detalhe técnico: {erro}"
             )
 
+
+    # -----------------------------------------------------
     # Salva resposta no histórico
+    # -----------------------------------------------------
+
     st.session_state.mensagens.append({
         "role": "assistant",
         "content": resposta,
+        "status": status,
         "evidencias": evidencias,
-        "validada": validada,
         "data_consulta": data_consulta
     })
