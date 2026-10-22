@@ -1,70 +1,99 @@
 # 🎓 Assistente Acadêmico IA
 
-Prova de conceito de um assistente acadêmico baseado em Inteligência Artificial para recuperação de informações acadêmicas e institucionais no Ensino Superior.
+**Desenvolvimento de um Assistente Acadêmico com Inteligência Artificial e RAG como Prática Educativa no Ensino Superior.**
 
-> ⚠️ **Projeto experimental:** atualmente, toda a documentação utilizada pelo sistema é simulada e criada exclusivamente para desenvolvimento, testes e demonstração.
+Protótipo acadêmico experimental desenvolvido para investigar a aplicação de Inteligência Artificial generativa e arquitetura **RAG (Retrieval-Augmented Generation)** na recuperação contextualizada de informações acadêmicas a partir de uma base documental controlada.
+
+> ⚠️ **Projeto experimental:** a documentação utilizada pelo protótipo é sintética e foi criada exclusivamente para desenvolvimento, testes e demonstração. O sistema não utiliza dados acadêmicos institucionais reais.
 
 ---
 
 ## 📌 Sobre o projeto
 
-O Assistente Acadêmico IA foi desenvolvido para investigar como a Inteligência Artificial pode facilitar o acesso de estudantes a informações que normalmente estão distribuídas entre diferentes documentos e serviços acadêmicos.
+O Assistente Acadêmico IA foi desenvolvido como uma **prática educativa** para explorar como técnicas de Inteligência Artificial, recuperação de informação e processamento documental podem ser aplicadas ao contexto do Ensino Superior.
 
-Em vez de o usuário precisar localizar manualmente uma informação em regulamentos, calendários, manuais ou outros documentos, a proposta é permitir que ele faça uma pergunta em linguagem natural.
+A proposta parte de um problema comum: informações acadêmicas podem estar distribuídas entre regulamentos, calendários, manuais e diferentes documentos, tornando sua localização pouco intuitiva.
+
+Em vez de realizar uma busca manual, o usuário pode formular uma pergunta em linguagem natural.
 
 Exemplo:
 
-> Quando acontece a AV2?
+> **Quando acontece a AV2?**
 
-O sistema pesquisa a documentação disponível, recupera os trechos considerados relevantes e utiliza essas informações para produzir uma resposta.
+O sistema realiza uma busca semântica na base documental, recupera trechos considerados relevantes e utiliza essas informações como contexto para a geração da resposta.
+
+Quando a documentação disponível não contém informação suficiente, o protótipo pode informar que não encontrou a informação, em vez de apresentar uma resposta sem fundamento documental.
 
 ---
 
 ## 🎯 Objetivo
 
-Desenvolver e avaliar uma prova de conceito capaz de:
+Desenvolver um **MVP funcional** capaz de:
 
-- receber perguntas acadêmicas em linguagem natural;
-- localizar informações em uma base documental;
-- recuperar documentos e trechos relevantes;
-- gerar respostas fundamentadas na documentação;
-- apresentar fontes e evidências utilizadas;
-- evitar respostas quando não houver informação suficiente;
-- incorporar mecanismos básicos de privacidade e proteção de dados.
+- receber perguntas em linguagem natural;
+- recuperar informações em uma base documental controlada;
+- realizar recuperação semântica de trechos relevantes;
+- utilizar os trechos recuperados como contexto para um modelo de linguagem;
+- gerar respostas em linguagem natural;
+- apresentar fonte, página e evidências quando disponíveis;
+- informar quando a documentação disponível não é suficiente;
+- explorar mecanismos experimentais de privacidade e proteção de dados.
 
 ---
 
-## 🧠 Como funciona
+## 🧠 Arquitetura RAG
 
-O projeto utiliza uma arquitetura baseada em **RAG (Retrieval-Augmented Generation)**.
+O projeto utiliza uma arquitetura baseada em **Retrieval-Augmented Generation (RAG)**.
 
-Fluxo:
+Fluxo simplificado:
 
-Usuário → Streamlit → Privacidade → Busca semântica → ChromaDB → Documentos → LLM local → Resposta + evidências
+```text
+Pergunta
+   ↓
+Embedding
+   ↓
+Recuperação semântica
+   ↓
+ChromaDB
+   ↓
+Trechos relevantes
+   ↓
+Contexto
+   ↓
+Llama 3.2
+   ↓
+Resposta + evidência
+```
+
+A ideia central é recuperar informações da documentação antes da geração da resposta.
+
+O projeto **não realiza treinamento do LLM com os documentos**. São utilizados modelos previamente treinados; o desenvolvimento concentra-se na recuperação, integração, controle de contexto, interface e avaliação do protótipo.
 
 ---
 
 ## 🛠️ Tecnologias utilizadas
 
-- Python 3.12
-- Streamlit
-- Ollama
-- Llama 3.2 3B
-- ChromaDB
-- Sentence Transformers
-- PyMuPDF
-- Git
-- GitHub
+- **Python 3.12**
+- **Streamlit**
+- **Ollama**
+- **Llama 3.2 3B**
+- **ChromaDB**
+- **Sentence Transformers**
+- **PyMuPDF**
+- **Git**
+- **GitHub**
 
-Modelo de embeddings:
+### Modelo de embeddings
 
-`paraphrase-multilingual-MiniLM-L12-v2`
+```text
+paraphrase-multilingual-MiniLM-L12-v2
+```
 
 ---
 
 ## 📚 Base documental
 
-Atualmente, o projeto utiliza uma base acadêmica totalmente simulada, dividida em seis documentos:
+O protótipo utiliza uma base acadêmica totalmente simulada composta por seis documentos:
 
 1. Regulamento Acadêmico Simulado
 2. Calendário Acadêmico 2026 Simulado
@@ -73,42 +102,89 @@ Atualmente, o projeto utiliza uma base acadêmica totalmente simulada, dividida 
 5. Guia de Estágio e Atividades Complementares
 6. Guia de Atendimento e Tecnologia
 
-A utilização de documentos simulados permite desenvolver e testar o sistema sem utilizar dados acadêmicos institucionais reais.
+A utilização de documentação sintética permite testar o sistema sem utilizar dados acadêmicos institucionais ou informações pessoais reais.
 
 ---
 
-## 🔎 Fontes e evidências
+## 🔎 Evidências e rastreabilidade
 
-Quando uma informação é encontrada, a interface pode apresentar:
+Quando uma informação é recuperada, o sistema pode apresentar elementos que permitem verificar sua origem, como:
 
 - documento utilizado;
 - página;
 - trecho recuperado;
-- data da consulta;
-- versão da base utilizada.
+- evidência associada à resposta.
+
+A presença de uma evidência **não garante que a resposta esteja correta**. Ela cria um caminho para que o usuário possa verificar de onde a informação foi obtida.
 
 ---
 
 ## 🛡️ Privacidade
 
-O projeto possui uma camada experimental de privacidade executada antes da consulta à base documental.
+O projeto possui uma camada **experimental** de privacidade executada antes da consulta à base documental.
 
-Ela está sendo desenvolvida para identificar situações envolvendo dados pessoais, credenciais e determinadas informações sensíveis.
+Essa camada foi desenvolvida para explorar o bloqueio de determinadas entradas envolvendo dados pessoais, credenciais e outras informações consideradas sensíveis no contexto do protótipo.
 
-A existência dessa camada não representa certificação ou garantia de conformidade com a LGPD.
+A existência dessa camada não representa certificação, auditoria ou garantia de conformidade com a LGPD.
 
 ---
 
 ## 🚦 Estados de resposta
 
 ### ✅ Informação encontrada
-A documentação contém informação suficiente e o sistema apresenta a resposta e suas evidências.
+
+Quando existe informação suficiente na documentação disponível, o sistema recupera os trechos relevantes e gera uma resposta acompanhada das evidências disponíveis.
 
 ### ℹ️ Informação não encontrada
-Não existe informação suficiente na documentação para responder.
+
+Quando não há informação suficiente na documentação disponível, o sistema pode informar que a informação não foi encontrada.
+
+Exemplo:
+
+> **Não encontrei essa informação na documentação disponível.**
 
 ### 🛡️ Solicitação bloqueada
-A camada de privacidade interrompe a consulta antes que ela chegue ao RAG.
+
+Quando uma entrada é identificada pela camada experimental de privacidade, a consulta pode ser interrompida antes da etapa de recuperação.
+
+---
+
+## 🧪 Demonstração
+
+Exemplo de consulta com informação disponível:
+
+> **Quando acontece a AV2?**
+
+Resultado esperado:
+
+> **16 a 20 de novembro de 2026.**
+
+Fonte:
+
+> **Calendário Acadêmico 2026 — página 1.**
+
+Exemplo de consulta sem informação disponível:
+
+> **Quanto custa o estacionamento?**
+
+Resultado esperado:
+
+> **Não encontrei essa informação na documentação disponível.**
+
+---
+
+## 🔬 Contribuição do trabalho
+
+O RAG é uma arquitetura conhecida e já existem produtos e trabalhos acadêmicos que utilizam recuperação documental associada a modelos de linguagem.
+
+A contribuição deste projeto não está na criação da arquitetura RAG, mas na **implementação e aplicação de um protótipo próprio no contexto do Ensino Superior**, explorando:
+
+- base documental controlada;
+- recuperação semântica;
+- execução local do modelo de linguagem;
+- apresentação de evidências documentais;
+- comportamento controlado diante da ausência de informação;
+- integração desses componentes como uma prática educativa.
 
 ---
 
@@ -116,29 +192,43 @@ A camada de privacidade interrompe a consulta antes que ela chegue ao RAG.
 
 O protótipo:
 
-- utiliza documentação simulada;
+- utiliza documentação sintética;
 - não acessa sistemas acadêmicos reais;
 - não utiliza dados reais de estudantes;
 - não consulta notas ou históricos individuais;
 - não possui autenticação institucional;
 - não está integrado a um AVA real;
+- não possui avaliação formal de precisão em escala;
 - não deve ser considerado um sistema institucional em produção.
+
+Uma implantação real exigiria, entre outros aspectos, autenticação, autorização, governança, atualização documental, segurança, monitoramento e avaliação formal do sistema.
 
 ---
 
-## 🧪 Status do projeto
+## 🚀 Possibilidades futuras
 
-**Status atual: desenvolvimento e validação pré-MVP 1.0.**
+Entre as possibilidades de evolução estão:
 
-A próxima etapa será a realização de testes controlados de precisão, recuperação de fontes, evidências, recusas, privacidade e possíveis alucinações.
+- avaliação formal da precisão da recuperação e das respostas;
+- busca híbrida e reranking;
+- integração com APIs e sistemas institucionais autorizados;
+- atualização e versionamento da base documental;
+- controle de vigência das fontes;
+- evolução para integração com ferramentas por meio de MCP;
+- utilização de agentes para tarefas de múltiplas etapas;
+- interação por voz e recursos multimodais.
 
 ---
 
 ## 📋 Histórico
 
-O histórico detalhado das versões será mantido no arquivo:
+O histórico de desenvolvimento e evolução do projeto é mantido em:
 
-`CHANGELOG.md`
+```text
+CHANGELOG.md
+```
+
+O histórico de commits do repositório também registra a evolução do desenvolvimento.
 
 ---
 
@@ -146,4 +236,32 @@ O histórico detalhado das versões será mantido no arquivo:
 
 **Bernardo Augusto Gomes Zendersky**
 
-Projeto acadêmico experimental — 2026.
+Projeto acadêmico desenvolvido em **2026** como prática educativa no Ensino Superior.
+
+### Como citar
+
+Caso este projeto seja utilizado, adaptado ou mencionado em trabalhos acadêmicos, recomenda-se citar o autor e o repositório conforme as informações disponíveis no arquivo [`CITATION.cff`](CITATION.cff).
+
+Referência sugerida:
+
+> **ZENDERSKY, Bernardo Augusto Gomes.** *Desenvolvimento de um Assistente Acadêmico com Inteligência Artificial e RAG*. 2026. GitHub: bernardozend/assistente-academico-mvp.
+
+---
+
+## © Direitos autorais
+
+Copyright © 2026 **Bernardo Augusto Gomes Zendersky**.
+
+Este repositório é disponibilizado publicamente para consulta e referência acadêmica. A disponibilização pública do código não constitui renúncia aos direitos autorais do autor.
+
+Para informações sobre reutilização, distribuição ou criação de trabalhos derivados, consulte o autor antes de utilizar o código além das funcionalidades permitidas pelo próprio GitHub.
+
+---
+
+## 📫 Contato
+
+**Bernardo Augusto Gomes Zendersky**
+
+GitHub: `https://github.com/bernardozend`
+
+Repositório: `https://github.com/bernardozend/assistente-academico-mvp`

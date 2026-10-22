@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+title: "Desenvolvimento de um Assistente Acadêmico com Inteligência Artificial e RAG"
+version: "1.0.0"
+date-released: "2026-10-22"
+authors:
+  - family-names: "Zendersky"
+    given-names: "Bernardo Augusto Gomes"
+repository-code: "https://github.com/bernardozend/assistente-academico-mvp.git"
+abstract: "Protótipo acadêmico de um assistente baseado em Inteligência Artificial generativa e arquitetura RAG para recuperação de informações a partir de uma base documental controlada no contexto do Ensino Superior."
+keywords:
+  - "Inteligência Artificial Generativa"
+  - "Retrieval-Augmented Generation"
+  - "RAG"
+  - "Recuperação de Informação"
+  - "Tecnologias Educacionais"
+  - "Ensino Superior"

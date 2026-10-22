@@ -1,0 +1,142 @@
+========================================
+ASSISTENTE ACADÊMICO IA - COMANDOS BÁSICOS
+========================================
+
+1) ENTRAR NA PASTA DO PROJETO
+
+cd C:\Users\ead.bernardo\assistente-academico-mvp-git
+
+
+2) ATIVAR O AMBIENTE VIRTUAL
+
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+
+.\.venv\Scripts\Activate.ps1
+
+
+3) VERIFICAR PYTHON
+
+python --version
+
+
+4) ATUALIZAR O PIP
+
+python -m pip install --upgrade pip
+
+
+5) INSTALAR AS DEPENDÊNCIAS DO PROJETO
+
+python -m pip install streamlit chromadb pymupdf sentence-transformers ollama
+
+
+6) VERIFICAR O OLLAMA
+
+ollama --version
+
+
+7) VER QUAIS MODELOS DO OLLAMA ESTÃO INSTALADOS
+
+ollama list
+
+
+8) BAIXAR O MODELO, CASO NÃO ESTEJA INSTALADO
+
+ollama pull llama3.2:3b
+
+
+9) CRIAR / RECRIAR O BANCO VETORIAL
+
+python ingest.py
+
+
+10) INICIAR O SISTEMA
+
+python -m streamlit run app.py
+
+
+11) PARAR O STREAMLIT
+
+Ctrl + C
+
+
+========================================
+GIT / GITHUB
+========================================
+
+12) VERIFICAR O ESTADO DO PROJETO
+
+git status
+
+
+13) BAIXAR ALTERAÇÕES DO GITHUB
+
+git pull
+
+
+14) ADICIONAR ALTERAÇÕES
+
+git add .
+
+
+15) CRIAR UM COMMIT
+
+git commit -m "Descricao da alteracao"
+
+
+16) ENVIAR ALTERAÇÕES PARA O GITHUB
+
+git push
+
+
+17) VER HISTÓRICO DOS COMMITS
+
+git log --oneline -10
+
+
+========================================
+ROTINA NORMAL
+========================================
+
+ANTES DE COMEÇAR:
+
+git pull
+
+ATIVAR AMBIENTE:
+
+.\.venv\Scripts\Activate.ps1
+
+RODAR O SISTEMA:
+
+python -m streamlit run app.py
+
+
+DEPOIS DE ALTERAR E TESTAR:
+
+git status
+
+git add .
+
+git commit -m "Descricao da alteracao"
+
+git push
+
+
+
+O protótipo foi desenvolvido em Python e utiliza uma arquitetura RAG.
+
+Primeiro, os documentos acadêmicos simulados são processados, divididos em trechos e convertidos em representações vetoriais chamadas embeddings.
+
+Esses vetores são armazenados no ChromaDB. Quando o usuário faz uma pergunta, ela também é representada semanticamente e o sistema recupera os trechos mais relacionados.
+
+Esses trechos são então fornecidos como contexto para um modelo de linguagem Llama 3.2, executado localmente através do Ollama. O modelo gera a resposta condicionado por esse contexto, enquanto a aplicação apresenta também fonte e evidência. Antes desse processo há ainda uma camada experimental de privacidade para determinadas entradas sensíveis. A interface foi construída com Streamlit.
+
+
+Utilizei modelos previamente treinados. O que desenvolvi foi a arquitetura de recuperação, integração, controle de contexto, interface e avaliação. RAG permite incorporar conhecimento documental no momento da consulta sem realizar treinamento do LLM com esses documentos.
+
+“O RAG busca a informação, os embeddings ajudam a encontrar pelo significado, e o Llama gera a resposta. O Ollama roda o modelo localmente e o Streamlit mostra a interface.”
+
+RAG = BUSCA
+Embedding = SIGNIFICADO
+LLM/Llama = RESPONDE
+Ollama = RODA
+Streamlit = MOSTRA
